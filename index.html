@@ -107,7 +107,6 @@
             cursor: pointer;
         }
 
-        /* Контейнер для текстовых меток внутри колеса */
         .sector-labels {
             position: absolute;
             top: 0;
@@ -127,7 +126,6 @@
             text-shadow: 2px 2px 0 #000, 0 0 10px #000;
             white-space: nowrap;
             transform-origin: 0 0;
-            /* Трансформация задаётся динамически в JS */
         }
 
         .wheel-pointer {
@@ -360,7 +358,6 @@
         <div class="wheel-section">
             <div class="wheel-container">
                 <div class="wheel" id="wheel">
-                    <!-- Контейнер для текстовых меток, будет заполнен через JS -->
                     <div class="sector-labels" id="sectorLabels"></div>
                 </div>
                 <div class="wheel-pointer"></div>
@@ -421,22 +418,20 @@
             let canGuess = false;
             let usedLetters = [];
             let wheelSpinning = false;
+            let totalRotation = 0; // накопленный угол поворота (только по часовой стрелке)
 
             // Создание меток на барабане (привязаны к колесу)
             function createSectorLabels() {
                 sectorLabelsDiv.innerHTML = '';
-                const radius = 210; // расстояние от центра до метки (чуть меньше радиуса колеса)
+                const radius = 210; // расстояние от центра до метки
                 sectors.forEach(sector => {
                     const label = document.createElement('div');
                     label.className = 'sector-label';
                     label.textContent = sector.short;
-                    // Угол в радианах: центр сектора = угол начала + 22.5°
                     const angleRad = (sector.angle + 22.5) * Math.PI / 180;
                     const x = Math.sin(angleRad) * radius;
-                    const y = -Math.cos(angleRad) * radius; // "-" потому что ось Y направлена вниз
-                    // Применяем трансформацию для позиционирования и контр-вращения, чтобы текст оставался горизонтальным
+                    const y = -Math.cos(angleRad) * radius;
                     label.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(0deg)`;
-                    // Важно: мы не вращаем текст, просто смещаем. Он всегда горизонтален.
                     sectorLabelsDiv.appendChild(label);
                 });
             }
@@ -452,6 +447,7 @@
                 canGuess = false;
                 currentSectorValue = 0;
                 currentSectorDisplay.textContent = 'Текущий сектор: —';
+                totalRotation = 0;
                 wheel.style.transform = 'rotate(0deg)';
                 updateScore();
                 confettiContainer.innerHTML = '';
@@ -559,13 +555,15 @@
                 canGuess = false;
                 spinBtn.disabled = true;
 
-                const spins = 5 + Math.floor(Math.random() * 5);
-                const extraDeg = Math.random() * 360;
-                const targetDeg = spins * 360 + extraDeg;
-                wheel.style.transform = `rotate(${targetDeg}deg)`;
+                const spins = 5 + Math.floor(Math.random() * 5); // 5-9 полных оборотов
+                const extraDeg = Math.random() * 360; // дополнительный угол
+                const addRotation = spins * 360 + extraDeg;
+                totalRotation += addRotation; // всегда увеличиваем, чтобы крутилось только по часовой стрелке
+
+                wheel.style.transform = `rotate(${totalRotation}deg)`;
 
                 setTimeout(() => {
-                    const finalAngle = targetDeg % 360;
+                    const finalAngle = totalRotation % 360;
                     let sectorIndex = Math.floor(finalAngle / 45);
                     if (sectorIndex >= 8) sectorIndex = 7;
                     const sector = sectors[sectorIndex];
@@ -639,6 +637,7 @@
                 canGuess = false;
                 currentSectorValue = 0;
                 currentSectorDisplay.textContent = 'Текущий сектор: —';
+                totalRotation = 0;
                 wheel.style.transform = 'rotate(0deg)';
                 updateButtonsState();
                 confettiContainer.innerHTML = '';
