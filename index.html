@@ -38,7 +38,6 @@
             text-transform: uppercase;
         }
 
-        /* Игровой контейнер */
         .game-container {
             max-width: 1300px;
             width: 100%;
@@ -55,7 +54,6 @@
             z-index: 10;
         }
 
-        /* Табло слова */
         .word-board {
             background: #0a0f1e;
             border: 5px solid #FFD700;
@@ -73,7 +71,6 @@
             line-height: 1.3;
         }
 
-        /* Секция барабана */
         .wheel-section {
             display: flex;
             flex-direction: column;
@@ -84,7 +81,7 @@
 
         .wheel-container {
             position: relative;
-            width: 550px;  /* увеличен */
+            width: 550px;
             height: 550px;
             margin: 1rem 0;
         }
@@ -94,14 +91,14 @@
             height: 100%;
             border-radius: 50%;
             background: conic-gradient(
-                #ff4444 0deg 45deg,   /* банкрот */
-                #44ff44 45deg 90deg,  /* 100 */
-                #4444ff 90deg 135deg, /* 200 */
-                #ffff44 135deg 180deg,/* 300 */
-                #ff44ff 180deg 225deg,/* 500 */
-                #44ffff 225deg 270deg,/* приз */
-                #ff8844 270deg 315deg,/* пропуск */
-                #8844ff 315deg 360deg /* 0 */
+                #ff4444 0deg 45deg,
+                #44ff44 45deg 90deg,
+                #4444ff 90deg 135deg,
+                #ffff44 135deg 180deg,
+                #ff44ff 180deg 225deg,
+                #44ffff 225deg 270deg,
+                #ff8844 270deg 315deg,
+                #8844ff 315deg 360deg
             );
             border: 8px solid #FFD700;
             box-shadow: 0 0 30px gold, inset 0 0 30px rgba(255,255,255,0.5);
@@ -110,7 +107,29 @@
             cursor: pointer;
         }
 
-        /* стрелка-указатель */
+        /* Контейнер для текстовых меток внутри колеса */
+        .sector-labels {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .sector-label {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            font-size: 2rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 2px 2px 0 #000, 0 0 10px #000;
+            white-space: nowrap;
+            transform-origin: 0 0;
+            /* Трансформация задаётся динамически в JS */
+        }
+
         .wheel-pointer {
             position: absolute;
             top: -20px;
@@ -125,30 +144,6 @@
             z-index: 20;
         }
 
-        /* Текстовые метки секторов */
-        .sector-text {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-        }
-
-        .sector-text span {
-            position: absolute;
-            font-size: 1.6rem;
-            font-weight: 900;
-            color: #fff;
-            text-shadow: 2px 2px 0 #000, 0 0 10px #000;
-            transform-origin: center;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%) rotate(var(--rot)) translateY(-190px) rotate(calc(-1 * var(--rot)));
-            white-space: nowrap;
-        }
-
-        /* центральная метка (для красоты) */
         .center-label {
             position: absolute;
             top: 50%;
@@ -189,7 +184,6 @@
             pointer-events: none;
         }
 
-        /* Информация о текущем секторе */
         .current-sector {
             font-size: 2.2rem;
             background: #0a0f1e;
@@ -201,7 +195,6 @@
             margin: 0.5rem 0;
         }
 
-        /* Виртуальная клавиатура */
         .keyboard {
             display: flex;
             flex-wrap: wrap;
@@ -246,7 +239,6 @@
             background: #444;
         }
 
-        /* Счёт */
         .score-panel {
             font-size: 2.5rem;
             color: #FFD700;
@@ -257,7 +249,6 @@
             padding: 1rem 3rem;
         }
 
-        /* Кнопки управления */
         .control-buttons {
             display: flex;
             gap: 2rem;
@@ -285,7 +276,6 @@
             transform: scale(1.05);
         }
 
-        /* Анимация вспышки */
         @keyframes pop {
             0% { transform: scale(1); text-shadow: 0 0 5px gold; }
             50% { transform: scale(1.2); text-shadow: 0 0 20px orange, 0 0 40px red; }
@@ -296,7 +286,6 @@
             animation: pop 0.4s ease;
         }
 
-        /* Анимация банкрота */
         @keyframes bankruptFlash {
             0% { background-color: #ff0000; }
             100% { background-color: #1a1f30; }
@@ -306,7 +295,6 @@
             animation: bankruptFlash 0.5s 2;
         }
 
-        /* Анимация счёта */
         @keyframes scorePulse {
             0% { text-shadow: 0 0 15px cyan; }
             50% { text-shadow: 0 0 30px lime, 0 0 60px gold; }
@@ -317,7 +305,6 @@
             animation: scorePulse 0.5s;
         }
 
-        /* Конфетти / фейерверк (простая анимация частиц) */
         .confetti-container {
             position: fixed;
             top: 0;
@@ -344,7 +331,6 @@
             100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
         }
 
-        /* Адаптация */
         @media (max-width: 800px) {
             .wheel-container { width: 400px; height: 400px; }
             .word-board { font-size: 3.5rem; letter-spacing: 1rem; }
@@ -366,33 +352,28 @@
 <body>
     <h1>🎡 ПОЛЕ ЧУДЕС 🎡</h1>
 
-    <!-- Контейнер для конфетти -->
     <div class="confetti-container" id="confettiContainer"></div>
 
     <div class="game-container">
-        <!-- Табло слова -->
         <div class="word-board" id="wordBoard">_ _ _ _ _</div>
 
-        <!-- Барабан -->
         <div class="wheel-section">
             <div class="wheel-container">
-                <div class="wheel" id="wheel"></div>
+                <div class="wheel" id="wheel">
+                    <!-- Контейнер для текстовых меток, будет заполнен через JS -->
+                    <div class="sector-labels" id="sectorLabels"></div>
+                </div>
                 <div class="wheel-pointer"></div>
                 <div class="center-label"></div>
-                <!-- Текстовые метки секторов (будут добавлены через JS для точного позиционирования) -->
-                <div class="sector-text" id="sectorTexts"></div>
             </div>
             <button class="spin-button" id="spinBtn">КРУТИТЬ</button>
             <div class="current-sector" id="currentSectorDisplay">Текущий сектор: —</div>
         </div>
 
-        <!-- Виртуальная клавиатура -->
         <div class="keyboard" id="keyboard"></div>
 
-        <!-- Счёт -->
         <div class="score-panel" id="scoreDisplay">💰 0</div>
 
-        <!-- Кнопки управления -->
         <div class="control-buttons">
             <button class="control-btn" id="newWordBtn">НОВОЕ СЛОВО</button>
             <button class="control-btn" id="resetGameBtn">СБРОС ИГРЫ</button>
@@ -403,14 +384,12 @@
 
     <script>
         (function() {
-            // ---------- Список слов ----------
             const words = [
                 "КОСМОС", "РОДИНА", "БЕРЁЗКА", "ГАГАРИН", "КАЛИНКА",
                 "ПОБЕДА", "СПУТНИК", "БАЯН", "ГАРМОНЬ", "САМОВАР",
                 "МАТРЁШКА", "КРЕМЛЬ", "МОСКВА", "ВОЛГА", "БАЛАЛАЙКА"
             ];
 
-            // Секторы барабана
             const sectors = [
                 { name: "БАНКРОТ", short: "Б", value: "bankrupt", angle: 0, color: "#ff4444" },
                 { name: "100", short: "100", value: 100, angle: 45, color: "#44ff44" },
@@ -422,7 +401,6 @@
                 { name: "0", short: "0", value: 0, angle: 315, color: "#8844ff" }
             ];
 
-            // DOM элементы
             const wordBoard = document.getElementById('wordBoard');
             const wheel = document.getElementById('wheel');
             const spinBtn = document.getElementById('spinBtn');
@@ -431,10 +409,9 @@
             const scoreDisplay = document.getElementById('scoreDisplay');
             const newWordBtn = document.getElementById('newWordBtn');
             const resetGameBtn = document.getElementById('resetGameBtn');
-            const sectorTextsDiv = document.getElementById('sectorTexts');
+            const sectorLabelsDiv = document.getElementById('sectorLabels');
             const confettiContainer = document.getElementById('confettiContainer');
 
-            // Состояние игры
             let currentWord = '';
             let guessedLetters = [];
             let displayedWord = '';
@@ -445,21 +422,26 @@
             let usedLetters = [];
             let wheelSpinning = false;
 
-            // Добавляем текстовые метки на барабан
+            // Создание меток на барабане (привязаны к колесу)
             function createSectorLabels() {
-                sectorTextsDiv.innerHTML = '';
+                sectorLabelsDiv.innerHTML = '';
+                const radius = 210; // расстояние от центра до метки (чуть меньше радиуса колеса)
                 sectors.forEach(sector => {
-                    const span = document.createElement('span');
-                    span.textContent = sector.short; // короткая метка
-                    // Поворачиваем на угол сектора + половина сектора (22.5°) для центрирования
-                    const rot = sector.angle + 22.5;
-                    span.style.setProperty('--rot', rot + 'deg');
-                    sectorTextsDiv.appendChild(span);
+                    const label = document.createElement('div');
+                    label.className = 'sector-label';
+                    label.textContent = sector.short;
+                    // Угол в радианах: центр сектора = угол начала + 22.5°
+                    const angleRad = (sector.angle + 22.5) * Math.PI / 180;
+                    const x = Math.sin(angleRad) * radius;
+                    const y = -Math.cos(angleRad) * radius; // "-" потому что ось Y направлена вниз
+                    // Применяем трансформацию для позиционирования и контр-вращения, чтобы текст оставался горизонтальным
+                    label.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(0deg)`;
+                    // Важно: мы не вращаем текст, просто смещаем. Он всегда горизонтален.
+                    sectorLabelsDiv.appendChild(label);
                 });
             }
             createSectorLabels();
 
-            // Инициализация
             function initGame() {
                 currentWord = words[Math.floor(Math.random() * words.length)];
                 guessedLetters = [];
@@ -472,11 +454,9 @@
                 currentSectorDisplay.textContent = 'Текущий сектор: —';
                 wheel.style.transform = 'rotate(0deg)';
                 updateScore();
-                // Очищаем конфетти
                 confettiContainer.innerHTML = '';
             }
 
-            // Обновление отображения слова
             function updateWordDisplay() {
                 let display = '';
                 for (let char of currentWord) {
@@ -488,9 +468,7 @@
                 }
                 displayedWord = display.trim();
                 wordBoard.textContent = displayedWord;
-                // Проверка на полное отгадывание
                 if (!displayedWord.includes('_')) {
-                    // Запускаем фейерверк
                     startConfetti();
                     setTimeout(() => {
                         alert(`Поздравляем! Вы отгадали слово: ${currentWord}`);
@@ -498,7 +476,6 @@
                 }
             }
 
-            // Фейерверк (конфетти)
             function startConfetti() {
                 for (let i = 0; i < 100; i++) {
                     const confetti = document.createElement('div');
@@ -510,14 +487,12 @@
                     confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
                     confetti.style.animationDelay = (Math.random() * 0.5) + 's';
                     confettiContainer.appendChild(confetti);
-                    // Удаляем после анимации
                     setTimeout(() => {
                         confetti.remove();
                     }, 5000);
                 }
             }
 
-            // Рендер клавиатуры
             function renderKeyboard() {
                 const letters = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.split('');
                 keyboardDiv.innerHTML = '';
@@ -536,7 +511,6 @@
                 updateButtonsState();
             }
 
-            // Обработка нажатия буквы
             function handleLetterClick(letter) {
                 if (!canGuess) {
                     alert('Сначала крутите барабан!');
@@ -568,18 +542,15 @@
                     }
                     updateWordDisplay();
                 } else {
-                    // Неверная буква
                     wordBoard.classList.add('bankrupt-flash');
                     setTimeout(() => wordBoard.classList.remove('bankrupt-flash'), 500);
                 }
 
-                // Ход завершён (после любой буквы, даже угаданной, ход переходит — так проще)
                 canGuess = false;
                 canSpin = true;
                 updateButtonsState();
             }
 
-            // Вращение барабана
             function spinWheel() {
                 if (!canSpin || wheelSpinning) return;
 
@@ -610,7 +581,6 @@
 
                     currentSectorDisplay.textContent = `Текущий сектор: ${displayText}`;
 
-                    // Анимация
                     wheel.classList.add('pop-animation');
                     setTimeout(() => wheel.classList.remove('pop-animation'), 500);
 
@@ -620,7 +590,7 @@
                         document.querySelector('.score-panel').classList.add('bankrupt-flash');
                         setTimeout(() => document.querySelector('.score-panel').classList.remove('bankrupt-flash'), 500);
                         canGuess = false;
-                        canSpin = true;   // можно крутить снова
+                        canSpin = true;
                     } else if (sectorVal === 'prize') {
                         alert('🎁 ПРИЗ! Вы получаете виртуальную шоколадку!');
                         canGuess = false;
@@ -671,7 +641,7 @@
                 currentSectorDisplay.textContent = 'Текущий сектор: —';
                 wheel.style.transform = 'rotate(0deg)';
                 updateButtonsState();
-                confettiContainer.innerHTML = ''; // очистка конфетти
+                confettiContainer.innerHTML = '';
             }
 
             function resetGame() {
